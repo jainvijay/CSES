@@ -1,24 +1,33 @@
-
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.TreeSet;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class DistinctNumbers {
 
-    public static void main(String[] args) {
-        Scanner in = new Scanner(System.in);
+    public static void main(String[] args) throws IOException {
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 
-        Integer length = in.nextInt();
-
-        Integer counter = 0;
-        Set<Integer> distinctValues = new TreeSet<>();
-        while(counter < length && in.hasNext()) {
-            int a = in.nextInt();
-            distinctValues.add(a);
-            counter++;
+        String s1 = in.readLine();
+        List<Integer> values = new ArrayList<>();
+        String[] s2 = in.readLine().split(" ");
+        for (String s : s2) {
+            values.add(Integer.parseInt(s));
         }
-        System.out.println(distinctValues.size());
+
+        Collections.sort(values);
+
+        /*1,2,3*/
+        int result = 1, i = 1;
+        while (i < values.size()) {
+            if(!values.get(i - 1).equals(values.get(i))) {
+                result++;
+            }
+            i++;
+        }
+        System.out.println(result);
     }
 
 }
