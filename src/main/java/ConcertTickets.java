@@ -1,60 +1,77 @@
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 public class ConcertTickets {
+
+    public static class Pair implements Comparable<Pair> {
+        int value;
+        int index;
+
+        public Pair(int value, int index) {
+            this.value = value;
+            this.index = index;
+        }
+
+        @Override
+        public int compareTo(Pair o) {
+            if (this.value == o.value) {
+                return o.index - this.index;
+            } else {
+                return this.value - o.value;
+            }
+        }
+    }
+
     public static void main(String[] args) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(
             new InputStreamReader(System.in));
 
-        StringTokenizer st1 = new StringTokenizer(bufferedReader.readLine());
-        Integer numOfTickets = Integer.parseInt(st1.nextToken());
-        Integer numOfCustomer = Integer.parseInt(st1.nextToken());
-
-        StringTokenizer st2 = new StringTokenizer(bufferedReader.readLine());
-
-        List<Integer> ticketPrices = new ArrayList<>();
-        while (st2.hasMoreTokens()) {
-            ticketPrices.add(Integer.parseInt(st2.nextToken()));
+        String[] st1 = bufferedReader.readLine().split(" ");
+        Integer numOfTickets = Integer.parseInt(st1[0]);
+        Integer numOfCustomer = Integer.parseInt(st1[1]);
+        String[] st2 = bufferedReader.readLine().split(" ");
+        TreeSet<Pair> ticketPrices = new TreeSet<>();
+        Integer counter = 0;
+        for (String s2 : st2) {
+            if (counter > numOfTickets) {
+                break;
+            }
+            ticketPrices.add(new Pair(Integer.parseInt(s2), counter));
+            counter++;
         }
 
-        StringTokenizer st3 = new StringTokenizer(bufferedReader.readLine());
+        String[] st3 = bufferedReader.readLine().split(" ");
 
+        counter = 0;
         List<Integer> maxPriceToPay = new ArrayList<>();
-        while (st3.hasMoreTokens()) {
-            maxPriceToPay.add(Integer.parseInt(st3.nextToken()));
+        for (String s3 : st3) {
+            if (counter > numOfCustomer) {
+                break;
+            }
+            maxPriceToPay.add(Integer.parseInt(s3));
+            counter++;
         }
 
-        Collections.sort(ticketPrices);
+        OutputStream out = new BufferedOutputStream(System.out);
 
-        for (Integer maxPrice : maxPriceToPay) {
-            if(ticketPrices.get(0) > maxPrice) {
-                System.out.println(-1);
-            }
-            else {
-                int lesser = findLesser(ticketPrices, maxPrice);
-                System.out.println(ticketPrices.get(lesser));
-                ticketPrices.remove(lesser);
-            }
-        }
-    }
-
-    public static int findLesser(List<Integer> prices, Integer maxPrice) {
-        int low = 0, high = prices.size() - 1;
-        while (high >= low) {
-            int middle = low + (high - low + 1)/2;
-            if (prices.get(middle) > maxPrice) {
-                high = middle - 1;
-            } else if (prices.get(middle) < maxPrice) {
-                low = middle + 1;
+        for (int i = 0; i < maxPriceToPay.size(); i++) {
+            Pair pair = ticketPrices.floor(new Pair(maxPriceToPay.get(i), 0));
+            if (pair != null) {
+                out.write((pair.value + "\n").getBytes());
+                ticketPrices.remove(pair);
             } else {
-                return middle;
+                out.write((-1 + "\n").getBytes());
             }
+
         }
-        return low;
+        out.flush();
     }
+
+
 }
